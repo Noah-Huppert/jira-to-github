@@ -69,6 +69,15 @@ func (s JSONStore) write() error {
 			err.Error())
 	}
 
+	// Check if directory does't exists
+	if _, err := os.Stat(s.dir); os.IsNotExist(err) {
+		// Make directory
+		if err = os.MkdirAll(s.dir, os.ModePerm); err != nil {
+			return fmt.Errorf("error creating store directory: %s",
+				err.Error())
+		}
+	}
+
 	// Save
 	err = ioutil.WriteFile(s.path(), bytes, 0)
 	if err != nil {
