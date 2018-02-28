@@ -10,4 +10,7 @@ type Store interface {
 
 	// GetAll returns all the data in the store
 	GetAll() (interface{}, error)
+
+	// Delete removes a data object with a unique key
+	Delete(id string) error
 }

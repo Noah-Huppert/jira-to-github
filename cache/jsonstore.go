@@ -41,6 +41,20 @@ func (s JSONStore) path() string {
 	return fmt.Sprintf("%s/%s", s.dir, s.name)
 }
 
+// lazyLoad ensures we have loaded the JSON store file data
+func (s *JSONStore) lazyLoad() error {
+	// If we haven't load the store file yet
+	if !s.loaded {
+		// Load
+		if err := s.read(); err != nil {
+			return fmt.Errorf("error reading store file: %s",
+				err.Error())
+		}
+	}
+
+	return nil
+}
+
 // read imports the contents of the JSON store file into the data field
 func (s *JSONStore) read() error {
 	// Read file
@@ -90,13 +104,10 @@ func (s JSONStore) write() error {
 
 // Get implements Store.Get
 func (s *JSONStore) Get(id string) (interface{}, error) {
-	// If we haven't load the store file yet
-	if !s.loaded {
-		// Load
-		if err := s.read(); err != nil {
-			return fmt.Errorf("error reading store file: %s",
-				err.Error())
-		}
+	// Lazyload
+	if err := s.lazyLoad(); err != nil {
+		return nil, fmt.Errorf("error lazy loading store file: %s",
+			err.Error())
 	}
 
 	// Check if key exists
@@ -126,15 +137,32 @@ func (s *JSONStore) Set(id string, data interface{}) error {
 
 // GetAll implements Store.GetAll
 func (s *JSONStore) GetAll() (interface{}, error) {
-	// If we haven't load the store file yet
-	if !s.loaded {
-		// Load
-		if err := s.read(); err != nil {
-			return fmt.Errorf("error reading store file: %s",
-				err.Error())
-		}
+	// Lazyload
+	if err := s.lazyLoad(); err != nil {
+		return nil, fmt.Errorf("error lazy loading store file: %s",
+			err.Error())
 	}
 
 	// Success
 	return s.data, nil
+}
+
+// Delete implements Store.Delete
+func (s *JSONStore) Delete(id string) error {
+	// Lazyload
+	if err := s.lazyLoad(); err != nil {
+		return nil, fmt.Errorf("error lazy loading store file: %s",
+			err.Error())
+	}
+
+	// Check if key exists
+	if _, ok := s.data[id]; ok {
+		delete(s.data, id)
+	}
+
+	// Save
+	if err := s.write(); err != nil {
+		return fmt.Errorf("error saving store file: %s", err.Error())
+	}
+	return nil
 }
