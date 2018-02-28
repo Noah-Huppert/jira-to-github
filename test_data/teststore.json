@@ -1,0 +1,12 @@
+{
+	"exists": {
+		"a": 1,
+		"b": 2,
+		"c": true
+	},
+	"also exists": {
+		"a": true,
+		"b": 2,
+		"a": 1
+	}
+}

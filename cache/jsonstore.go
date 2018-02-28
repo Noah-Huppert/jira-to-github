@@ -1,9 +1,10 @@
 package cache
 
 import (
+	"encoding/json"
 	"fmt"
-	"ioutil"
-	"json"
+	"io/ioutil"
+	"os"
 )
 
 // JSONStoreCacheT is the type used by JSONStore to cache data values. Keys are
@@ -23,7 +24,7 @@ type JSONStore struct {
 	data JSONStoreCacheT
 
 	// loaded indicates if the JSON store file has been read yet
-	load bool
+	loaded bool
 }
 
 // NewJSONStore creates a JSONStore instance
@@ -38,7 +39,7 @@ func NewJSONStore(dir string, name string) *JSONStore {
 
 // path returns the file path of the JSON file data is stored in.
 func (s JSONStore) path() string {
-	return fmt.Sprintf("%s/%s", s.dir, s.name)
+	return fmt.Sprintf("../%s/%s.json", s.dir, s.name)
 }
 
 // lazyLoad ensures we have loaded the JSON store file data
@@ -111,13 +112,15 @@ func (s *JSONStore) Get(id string) (interface{}, error) {
 	}
 
 	// Check if key exists
-	if val, ok := self.data[id]; ok {
-		// Return
+	if val, ok := s.data[id]; ok {
+		// Success
+		fmt.Printf("ok %#v", s.data[id])
 		return val, nil
-	} else {
-		// Return nil
-		return nil, nil
 	}
+
+	// Doesn't exist
+	return nil, nil
+
 }
 
 // Set implements Store.Set
@@ -151,7 +154,7 @@ func (s *JSONStore) GetAll() (interface{}, error) {
 func (s *JSONStore) Delete(id string) error {
 	// Lazyload
 	if err := s.lazyLoad(); err != nil {
-		return nil, fmt.Errorf("error lazy loading store file: %s",
+		return fmt.Errorf("error lazy loading store file: %s",
 			err.Error())
 	}
 
