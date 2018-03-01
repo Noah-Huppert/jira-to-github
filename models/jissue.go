@@ -3,6 +3,9 @@ package models
 import (
 	"fmt"
 	"github.com/andygrunwald/go-jira"
+	"strings"
+
+	"github.com/Noah-Huppert/jira-to-github/str"
 )
 
 // JiraIssue holds the information we can tranfer to GitHub from a Jira issue.
@@ -26,9 +29,6 @@ type JiraIssue struct {
 	// Priority indicate how urgent an issue is
 	Priority string
 
-	// Due indicates the date the Jira issue is due by
-	Due string
-
 	// Status indicates the current work state of the issue
 	Status string
 
@@ -38,8 +38,18 @@ type JiraIssue struct {
 	// Description holds a longer write up about the Jira issue
 	Description string
 
-	// TODO: Continue adding fields to JiraIssue struct
-	// Continue after the "Status" field of https://godoc.org/github.com/andygrunwald/go-jira#IssueFields
+	// Progress indicates how complete an issue is. In the range from:
+	// [0, 1]
+	Progress float32
+
+	// Links holds the Jira Issue Links associated with the issue
+	Links []JiraIssueLink
+
+	// Comments holds the Jira Issue Comments associated with the issue
+	Comments []JiraIssueComment
+
+	// Labels holds the Jira labels put in the issue
+	Labels []string
 }
 
 // NewJiraIssue creates a new JiraIssue from a jira.Issue
@@ -56,6 +66,24 @@ func NewJiraIssue(from jira.Issue) JiraIssue {
 		res = from.Fields.Resolution.Name
 	}
 
+	// Parse progress
+	prog := float32(from.Fields.Progress.Progress) / float32(from.Fields.Progress.Total)
+
+	// Parse links
+	links := []JiraIssueLink{}
+	for _, jLink := range from.Fields.IssueLinks {
+		links = append(links, NewJiraIssueLink(*jLink))
+	}
+
+	// Parse comments
+	comments := []JiraIssueComment{}
+
+	if from.Fields.Comments != nil {
+		for _, jCom := range from.Fields.Comments.Comments {
+			comments = append(comments, NewJiraIssueComment(*jCom))
+		}
+	}
+
 	return JiraIssue{
 		ID:          from.ID,
 		Type:        from.Fields.Type.Name,
@@ -63,24 +91,33 @@ func NewJiraIssue(from jira.Issue) JiraIssue {
 		ProjectID:   from.Fields.Project.ID,
 		Resolution:  res,
 		Priority:    from.Fields.Priority.Name,
-		Due:         from.Fields.Duedate,
 		Status:      from.Fields.Status.Name,
 		Title:       from.Fields.Summary,
 		Description: from.Fields.Description,
+		Progress:    prog,
+		Links:       links,
+		Comments:    comments,
+		Labels:      from.Fields.Labels,
 	}
 }
 
 func (i JiraIssue) String() string {
-	return fmt.Sprintf("ID: %s\n"+
+	// TODO Figure out why slices not casting to slice of Stringers
+	return fmt.Sprintf("%sID: %s\n"+
 		"Type: %s\n"+
 		"ProjectID: %s\n"+
 		"AssigneeKey: %s\n"+
 		"Resolution: %s\n"+
 		"Priority: %s\n"+
-		"Due: %s\n"+
 		"Status: %s\n"+
 		"Title: %s\n"+
-		"Description: %s",
+		"Description: %s\n"+
+		"Progress: %g\n"+
+		"Links: [%s]\n"+
+		"Comments: [%s]\n"+
+		"Labels: [%s]",
 		i.ID, i.Type, i.ProjectID, i.AssigneeKey, i.Resolution,
-		i.Priority, i.Due, i.Status, i.Title, i.Description)
+		i.Priority, i.Status, i.Title, i.Description, i.Progress,
+		str.JoinStringers(i.Links, ", "), str.JoinStringers(i.Comments, ", "),
+		strings.Join(i.Labels, ", "))
 }

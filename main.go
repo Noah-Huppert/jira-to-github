@@ -2,12 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/andygrunwald/go-jira"
 	"log"
 	"os"
 
 	"github.com/Noah-Huppert/jira-to-github/config"
-	"github.com/Noah-Huppert/jira-to-github/models"
+	"github.com/Noah-Huppert/jira-to-github/jira"
 )
 
 func main() {
@@ -20,25 +19,8 @@ func main() {
 		logger.Fatalf("error loading configuration: %s", err.Error())
 	}
 
-	// Jira
-	jiraClient, err := jira.NewClient(nil, cfg.Jira.URL)
-	if err != nil {
-		logger.Fatalf("error creating Jira client: %s", err.Error())
-	}
-
-	jiraClient.Authentication.SetBasicAuth(cfg.Jira.Username,
-		cfg.Jira.Password)
-
-	// Get issues
-	issuesQuery := fmt.Sprintf("project=%s", cfg.Jira.Project)
-	issues, _, err := jiraClient.Issue.Search(issuesQuery, nil)
-	if err != nil {
-		logger.Fatalf("error searching for Jira issues: %s", err.Error())
-	}
-
-	for i, issue := range issues {
-		jI := models.NewJiraIssue(issue)
-
-		logger.Printf("%d\n===\n%s\n\n", i, jI)
+	// Load Jira issues
+	if err = jira.UpdateIssues(); err != nil {
+		logger.Fatalf("error loading jira issues: %s", err.Error())
 	}
 }
