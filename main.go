@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/Noah-Huppert/jira-to-github/config"
+	"github.com/Noah-Huppert/jira-to-github/models"
 )
 
 func main() {
@@ -29,14 +30,15 @@ func main() {
 		cfg.Jira.Password)
 
 	// Get issues
-	issuesQuery = fmt.Sprintf("project=%s", cfg.Jira.Project)
-
+	issuesQuery := fmt.Sprintf("project=%s", cfg.Jira.Project)
 	issues, _, err := jiraClient.Issue.Search(issuesQuery, nil)
 	if err != nil {
 		logger.Fatalf("error searching for Jira issues: %s", err.Error())
 	}
 
-	for _, issue := range issues {
-		logger.Print(issue)
+	for i, issue := range issues {
+		jI := models.NewJiraIssue(issue)
+
+		logger.Printf("%d\n===\n%s\n\n", i, jI)
 	}
 }

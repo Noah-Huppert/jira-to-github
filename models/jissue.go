@@ -1,8 +1,8 @@
 package models
 
 import (
+	"fmt"
 	"github.com/andygrunwald/go-jira"
-	"time"
 )
 
 // JiraIssue holds the information we can tranfer to GitHub from a Jira issue.
@@ -12,9 +12,6 @@ type JiraIssue struct {
 
 	// Type the style of Jira issue.
 	Type string
-
-	// Subtask indicates if the Jira Issue is a subtask
-	Subtask bool
 
 	// ProjectID holds the ID of the Jira project which the issue belongs to.
 	ProjectID string
@@ -30,7 +27,7 @@ type JiraIssue struct {
 	Priority string
 
 	// Due indicates the date the Jira issue is due by
-	Due time.Time
+	Due string
 
 	// Status indicates the current work state of the issue
 	Status string
@@ -47,17 +44,43 @@ type JiraIssue struct {
 
 // NewJiraIssue creates a new JiraIssue from a jira.Issue
 func NewJiraIssue(from jira.Issue) JiraIssue {
+	// Parse assignee
+	assn := ""
+	if from.Fields.Assignee != nil {
+		assn = from.Fields.Assignee.Key
+	}
+
+	// Parse resolution
+	res := ""
+	if from.Fields.Resolution != nil {
+		res = from.Fields.Resolution.Name
+	}
+
 	return JiraIssue{
 		ID:          from.ID,
 		Type:        from.Fields.Type.Name,
-		Subtask:     from.Fields.Type.Subtask,
-		AssigneeKey: from.Fields.Asignee.Key,
+		AssigneeKey: assn,
 		ProjectID:   from.Fields.Project.ID,
-		Resolution:  from.Fields.Resolution.Name,
+		Resolution:  res,
 		Priority:    from.Fields.Priority.Name,
 		Due:         from.Fields.Duedate,
 		Status:      from.Fields.Status.Name,
 		Title:       from.Fields.Summary,
 		Description: from.Fields.Description,
 	}
+}
+
+func (i JiraIssue) String() string {
+	return fmt.Sprintf("ID: %s\n"+
+		"Type: %s\n"+
+		"ProjectID: %s\n"+
+		"AssigneeKey: %s\n"+
+		"Resolution: %s\n"+
+		"Priority: %s\n"+
+		"Due: %s\n"+
+		"Status: %s\n"+
+		"Title: %s\n"+
+		"Description: %s",
+		i.ID, i.Type, i.ProjectID, i.AssigneeKey, i.Resolution,
+		i.Priority, i.Due, i.Status, i.Title, i.Description)
 }

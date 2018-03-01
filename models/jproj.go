@@ -21,7 +21,7 @@ type JiraProject struct {
 func NewJiraProject(from jira.Project) JiraProject {
 	// Extract issue types
 	types := []string{}
-	for t := range from.IssueTypes {
+	for _, t := range from.IssueTypes {
 		types = append(types, t.Name)
 	}
 
