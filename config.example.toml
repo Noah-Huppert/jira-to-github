@@ -1,0 +1,5 @@
+[Jira]
+URL = "http://Your Jira Site URL"
+Project = "Your Jira Project"
+Username = "Your Username"
+Passsord = "Your Password"

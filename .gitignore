@@ -1,2 +1,8 @@
 # Go
 vendor/
+test_out/
+
+# Jira To GitHub
+data/
+config.*
+!config.example.*
