@@ -67,7 +67,11 @@ func NewJiraIssue(from jira.Issue) JiraIssue {
 	}
 
 	// Parse progress
-	prog := float32(from.Fields.Progress.Progress) / float32(from.Fields.Progress.Total)
+	var prog float32
+
+	if from.Fields.Progress.Total != 0 {
+		prog = float32(from.Fields.Progress.Progress) / float32(from.Fields.Progress.Total)
+	}
 
 	// Parse links
 	links := []JiraIssueLink{}
@@ -103,7 +107,7 @@ func NewJiraIssue(from jira.Issue) JiraIssue {
 
 func (i JiraIssue) String() string {
 	// TODO Figure out why slices not casting to slice of Stringers
-	return fmt.Sprintf("%sID: %s\n"+
+	return fmt.Sprintf("ID: %s\n"+
 		"Type: %s\n"+
 		"ProjectID: %s\n"+
 		"AssigneeKey: %s\n"+
@@ -113,11 +117,12 @@ func (i JiraIssue) String() string {
 		"Title: %s\n"+
 		"Description: %s\n"+
 		"Progress: %g\n"+
-		"Links: [%s]\n"+
-		"Comments: [%s]\n"+
+		"Links: %s\n"+
+		"Comments: %s\n"+
 		"Labels: [%s]",
 		i.ID, i.Type, i.ProjectID, i.AssigneeKey, i.Resolution,
 		i.Priority, i.Status, i.Title, i.Description, i.Progress,
-		str.JoinStringers(i.Links, ", "), str.JoinStringers(i.Comments, ", "),
+		str.JoinStringers(StringerFromJILinks(i.Links)),
+		str.JoinStringers(StringerFromJIComments(i.Comments)),
 		strings.Join(i.Labels, ", "))
 }

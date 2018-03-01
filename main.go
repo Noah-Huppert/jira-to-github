@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -20,7 +19,7 @@ func main() {
 	}
 
 	// Load Jira issues
-	if err = jira.UpdateIssues(); err != nil {
+	if err = jira.UpdateIssues(cfg); err != nil {
 		logger.Fatalf("error loading jira issues: %s", err.Error())
 	}
 }

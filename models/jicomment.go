@@ -17,6 +17,18 @@ type JiraIssueComment struct {
 	Text string
 }
 
+// StringerFromJIComments creates a slice of fmt.Stringers from a slice of
+// JiraIssueComments
+func StringerFromJIComments(cs []JiraIssueComment) []fmt.Stringer {
+	sters := []fmt.Stringer{}
+
+	for _, c := range cs {
+		sters = append(sters, c.Stringer())
+	}
+
+	return sters
+}
+
 // NewJiraIssueComment creates a new JiraIssueComment from a jira.Comment
 func NewJiraIssueComment(from jira.Comment) JiraIssueComment {
 	return JiraIssueComment{
@@ -31,4 +43,8 @@ func (c JiraIssueComment) String() string {
 		"AuthorKey: %s\n"+
 		"Text: %s",
 		c.ID, c.AuthorKey, c.Text)
+}
+
+func (c JiraIssueComment) Stringer() fmt.Stringer {
+	return c
 }

@@ -23,6 +23,18 @@ type JiraIssueLink struct {
 	Comment *JiraIssueComment
 }
 
+// StringerFromJILinks creates a slice of fmt.Stringers from a slice of
+// JiraIssueLinks
+func StringerFromJILinks(ls []JiraIssueLink) []fmt.Stringer {
+	sters := []fmt.Stringer{}
+
+	for _, l := range ls {
+		sters = append(sters, l.Stringer())
+	}
+
+	return sters
+}
+
 // NewJiraIssueLink creates a new JiraIssueLink for a jira.IssueLink
 func NewJiraIssueLink(from jira.IssueLink) JiraIssueLink {
 	// Parse comment
@@ -32,11 +44,23 @@ func NewJiraIssueLink(from jira.IssueLink) JiraIssueLink {
 		com = &n
 	}
 
+	// Parse IDs
+	inID := ""
+	outID := ""
+
+	if from.InwardIssue != nil {
+		inID = from.InwardIssue.ID
+	}
+
+	if from.OutwardIssue != nil {
+		outID = from.OutwardIssue.ID
+	}
+
 	return JiraIssueLink{
 		ID:      from.ID,
 		Type:    from.Type.Name,
-		InID:    from.InwardIssue.ID,
-		OutID:   from.OutwardIssue.ID,
+		InID:    inID,
+		OutID:   outID,
 		Comment: com,
 	}
 }
@@ -48,4 +72,8 @@ func (l JiraIssueLink) String() string {
 		"OutID: %s\n"+
 		"Comment: %s",
 		l.ID, l.Type, l.InID, l.OutID, l.Comment)
+}
+
+func (l JiraIssueLink) Stringer() fmt.Stringer {
+	return l
 }

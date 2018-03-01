@@ -32,6 +32,12 @@
   revision = "23c074d0eceb2b8a5bfdbb271ab780cde70f05a8"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/jcelliott/lumber"
+  packages = ["."]
+  revision = "dd349441af25132d146d7095c6693a15431fc9b1"
+
+[[projects]]
   name = "github.com/magiconair/properties"
   packages = ["."]
   revision = "c3beff4c2358b44d0493c7dda585e7db7ff28ae6"
@@ -42,6 +48,12 @@
   name = "github.com/mitchellh/mapstructure"
   packages = ["."]
   revision = "00c29f56e2386353d58c599509e8dc3801b0d716"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/nanobox-io/golang-scribble"
+  packages = ["."]
+  revision = "ced58d671850da57ce8c11315424513b608083d7"
 
 [[projects]]
   name = "github.com/pelletier/go-toml"
@@ -106,6 +118,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "07ac10e401411901f9fbc0cc146f6900a3fb23fc7a366ab3192d129933872f95"
+  inputs-digest = "4ec92ce5539ec2f91eecc93671a23f8ccf05883abd8854b5433d0bde8f771e31"
   solver-name = "gps-cdcl"
   solver-version = 1

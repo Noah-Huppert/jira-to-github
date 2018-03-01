@@ -1,5 +1,8 @@
 package store
 
+// StoreDir specifies the directory to save data in
+const StoreDir string = "./data"
+
 // Store provides an interface for managing data store information
 type Store interface {
 	// Set saves a value in a store under a specified id. An error is
@@ -12,5 +15,5 @@ type Store interface {
 
 	// GetAll retrieves all values from a store. A data array along with an
 	// error will be returned. This error will be nil on success.
-	GetAll() (interface{}, error)
+	GetAll() ([]interface{}, error)
 }

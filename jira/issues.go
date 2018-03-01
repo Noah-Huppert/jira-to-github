@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/Noah-Huppert/jira-to-github/config"
 	"github.com/Noah-Huppert/jira-to-github/models"
 	"github.com/andygrunwald/go-jira"
 )
@@ -16,7 +17,7 @@ var logger *log.Logger = log.New(os.Stdout, "jira: ", 0)
 // the last sync.
 //
 // An error will be return if one occurs. Nil on success.
-func UpdateIssues() error {
+func UpdateIssues(cfg *config.Config) error {
 	// Jira
 	jiraClient, err := jira.NewClient(nil, cfg.Jira.URL)
 	if err != nil {
