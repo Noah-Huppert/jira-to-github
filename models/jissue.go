@@ -144,7 +144,6 @@ func NewJiraIssue(from jira.Issue) (JiraIssue, error) {
 
 // String implements fmt.Stringer.String
 func (i JiraIssue) String() string {
-	// TODO Figure out why slices not casting to slice of Stringers
 	return fmt.Sprintf("ID: %s\n"+
 		"Type: %s\n"+
 		"ProjectID: %s\n"+
