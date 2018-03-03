@@ -22,7 +22,8 @@ type JiraAggregate struct {
 	// MaxID indicates the highest Jira Issue ID we have
 	MaxID int
 
-	// UserKeys holds all the Jira User keys present in the retrieved issues
+	// Labels holds all the labels present in the retrieved issues
+	Labels []string
 
 	// aggregated indicates if the data has been populated
 	aggregated bool
@@ -31,6 +32,7 @@ type JiraAggregate struct {
 // NewJiraAggregate creates a new JiraAggregate
 func NewJiraAggregate() *JiraAggregate {
 	return &JiraAggregate{
+		Labels:     []string{},
 		aggregated: false,
 	}
 }
@@ -38,8 +40,9 @@ func NewJiraAggregate() *JiraAggregate {
 func (a JiraAggregate) String() string {
 	return fmt.Sprintf("IDs: %d\n"+
 		"MaxID: %d\n"+
+		"Labels: %s\n"+
 		"aggregated: %t",
-		a.IDs, a.MaxID, a.aggregated)
+		a.IDs, a.MaxID, a.Labels, a.aggregated)
 }
 
 // Aggregate collects the information. Pass the Jira Issue Store.
@@ -50,6 +53,10 @@ func (a *JiraAggregate) Aggregate(stores *store.Stores) error {
 		return fmt.Errorf("error retrieving all Jira Issue keys: %s",
 			err.Error())
 	}
+
+	// tempLabels is a map which temporarily records which labels the
+	// issues have
+	tempLabels := map[string]bool{}
 
 	// Get each issue
 	for _, key := range keys {
@@ -73,6 +80,16 @@ func (a *JiraAggregate) Aggregate(stores *store.Stores) error {
 		if id > a.MaxID {
 			a.MaxID = id
 		}
+
+		// Record labels
+		for _, label := range issue.Labels {
+			tempLabels[label] = true
+		}
+	}
+
+	// Save labels
+	for label := range tempLabels {
+		a.Labels = append(a.Labels, label)
 	}
 
 	a.aggregated = true

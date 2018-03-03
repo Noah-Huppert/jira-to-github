@@ -62,13 +62,6 @@ func UpdateIssues(cfg *config.Config, stores *store.Stores) error {
 		}
 	}
 
-	// Get keys
-	keys, err := stores.Jira.Issues.Keys()
-	if err != nil {
-		return fmt.Errorf("error retrieving keys: %s", err.Error())
-	}
-	logger.Printf("keys: %s", keys)
-
 	// Success
 	return nil
 }

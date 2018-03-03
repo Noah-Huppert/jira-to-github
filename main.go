@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/Noah-Huppert/jira-to-github/aggr"
 	"github.com/Noah-Huppert/jira-to-github/config"
 	"github.com/Noah-Huppert/jira-to-github/jira"
 	"github.com/Noah-Huppert/jira-to-github/store"
@@ -29,4 +30,11 @@ func main() {
 	if err = jira.UpdateIssues(cfg, stores); err != nil {
 		logger.Fatalf("error loading jira issues: %s", err.Error())
 	}
+
+	// Make Jira aggregate
+	jAggr := aggr.NewJiraAggregate()
+	if err = jAggr.Aggregate(stores); err != nil {
+		logger.Fatalf("error generating Jira aggregate: %s", err.Error())
+	}
+	logger.Printf("Jira aggregate: %s", jAggr)
 }
