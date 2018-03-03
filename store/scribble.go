@@ -2,8 +2,12 @@ package store
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/nanobox-io/golang-scribble"
+	"io/ioutil"
+	"os"
+	"strings"
 )
 
 // ScribbleStore implements the Store interface using the Scribble library
@@ -32,7 +36,7 @@ func NewScribbleStore(name string) (*ScribbleStore, error) {
 }
 
 // Set implements Store.Set
-func (s ScribbleStore) Set(id string, data interface{}) error {
+func (s ScribbleStore) Set(id string, data json.Marshaler) error {
 	if err := s.db.Write(s.name, id, data); err != nil {
 		return fmt.Errorf("error saving data: %s", err.Error())
 	}
@@ -41,35 +45,79 @@ func (s ScribbleStore) Set(id string, data interface{}) error {
 }
 
 // Get implements Store.Get
-func (s ScribbleStore) Get(id string) (interface{}, error) {
-	var data interface{}
-	if err := s.db.Read(s.name, id, &data); err != nil {
-		return nil, fmt.Errorf("error reading data: %s", err.Error())
+/*func (s ScribbleStore) Get(id string, data json.Unmarshaler) error {
+	if err := s.db.Read(s.name, id, data); err != nil {
+		return fmt.Errorf("error reading data: %s", err.Error())
 	}
 
-	return data, nil
+	return nil
+}*/
+
+// Hash implements Store.Hash
+func (s ScribbleStore) Hash(id string) (string, error) {
+	data := map[string]interface{}{}
+
+	// Get
+	if err := s.db.Read(s.name, id, &data); err != nil {
+		return "", fmt.Errorf("error reading data: %s", err.Error())
+	}
+
+	// Check has hash
+	if hash, ok := data["hash"]; ok {
+		if str, ok := hash.(string); ok {
+			return str, nil
+		} else {
+			return "", errors.New("cannot convert hash into string")
+		}
+	} else {
+		return "", errors.New("key has no hash stored")
+	}
 }
 
-// GetAll implements Store.GetAll
-func (s ScribbleStore) GetAll() ([]interface{}, error) {
-	rows, err := s.db.ReadAll(s.name)
+// Keys implements Store.Keys
+func (s ScribbleStore) Keys() ([]string, error) {
+	dir := fmt.Sprintf("%s/%s", StoreDir, s.name)
+
+	// Check dir exists
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		// Doesn't exist, Empty
+		return []string{}, nil
+	}
+
+	// Get files
+	files, err := ioutil.ReadDir(dir)
 	if err != nil {
-		return nil, fmt.Errorf("error retrieving all data objects: %s",
-			err.Error())
+		return nil, fmt.Errorf("error reading store directory: %s", err.Error())
 	}
 
-	items := []interface{}{}
-	for _, row := range rows {
-		var item interface{}
+	names := []string{}
 
-		err = json.Unmarshal([]byte(row), &item)
-		if err != nil {
-			return nil, fmt.Errorf("error converting row into "+
-				"object, row: %s, err: %s", row, err.Error())
+	for _, file := range files {
+		nameParts := strings.Split(file.Name(), ".")
+		name := strings.Join(nameParts[0:len(nameParts)-1], ".")
+		names = append(names, name)
+	}
+
+	return names, nil
+}
+
+// HasKey implements Store.HasKey
+func (s ScribbleStore) HasKey(id string) (bool, error) {
+	// Get keys
+	keys, err := s.Keys()
+	if err != nil {
+		return false, fmt.Errorf("error retrieving Jira issue store "+
+			"keys: %s", err.Error())
+	}
+
+	// Search
+	for _, key := range keys {
+		if key == id {
+			// Found
+			return true, nil
 		}
-
-		items = append(items, item)
 	}
 
-	return items, nil
+	// Not found
+	return false, nil
 }

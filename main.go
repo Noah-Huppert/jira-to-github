@@ -6,6 +6,7 @@ import (
 
 	"github.com/Noah-Huppert/jira-to-github/config"
 	"github.com/Noah-Huppert/jira-to-github/jira"
+	"github.com/Noah-Huppert/jira-to-github/store"
 )
 
 func main() {
@@ -18,8 +19,14 @@ func main() {
 		logger.Fatalf("error loading configuration: %s", err.Error())
 	}
 
+	// Stores
+	stores, err := store.NewStores()
+	if err != nil {
+		logger.Fatalf("error creating stores: %s", err.Error())
+	}
+
 	// Load Jira issues
-	if err = jira.UpdateIssues(cfg); err != nil {
+	if err = jira.UpdateIssues(cfg, stores); err != nil {
 		logger.Fatalf("error loading jira issues: %s", err.Error())
 	}
 }

@@ -1,12 +1,23 @@
 package models
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/andygrunwald/go-jira"
 	"strings"
+	//	"time"
 
+	"github.com/Noah-Huppert/jira-to-github/hash"
 	"github.com/Noah-Huppert/jira-to-github/str"
+	"github.com/fatih/structs"
 )
+
+// JiraDateFormat parses a Jira date in the format
+//                            "2018-03-01T16:45:05.866-0500"
+//const JiraDateFormat string = "2006-01-02T15:04:05.999999999Z07-0700"
+
+// JiraIssueStore is the name of the store to keep Jira Issues in
+const JiraIssueStore string = "jira_issues"
 
 // JiraIssue holds the information we can tranfer to GitHub from a Jira issue.
 type JiraIssue struct {
@@ -22,6 +33,11 @@ type JiraIssue struct {
 	// AssigneeKey holds the Key of the Jira user who is assigned to the
 	// issue
 	AssigneeKey string
+
+	// Assignee holds the JiraUser model for the corresponding
+	// AsigneeKey. Only populated when the JiraIssue is created from a
+	// Jira API query response.
+	Assignee *JiraUser `json:"-"`
 
 	// Resolution holds the final status of the Jira issue
 	Resolution string
@@ -50,14 +66,23 @@ type JiraIssue struct {
 
 	// Labels holds the Jira labels put in the issue
 	Labels []string
+
+	// Updated holds the last time the Jira issue was updated
+	//Updated *time.Time
 }
 
-// NewJiraIssue creates a new JiraIssue from a jira.Issue
-func NewJiraIssue(from jira.Issue) JiraIssue {
+// NewJiraIssue creates a new JiraIssue from a jira.Issue. An error is returned
+// if one occurs.
+func NewJiraIssue(from jira.Issue) (JiraIssue, error) {
 	// Parse assignee
-	assn := ""
+	assnKey := ""
+	var assn *JiraUser = nil
+
 	if from.Fields.Assignee != nil {
-		assn = from.Fields.Assignee.Key
+		assnKey = from.Fields.Assignee.Key
+
+		user := NewJiraUser(*from.Fields.Assignee)
+		assn = &user
 	}
 
 	// Parse resolution
@@ -88,10 +113,21 @@ func NewJiraIssue(from jira.Issue) JiraIssue {
 		}
 	}
 
+	// Parse updated
+	/*var updated *time.Time = nil
+
+	t, err := time.Parse(JiraDateFormat, from.Fields.Updated)
+	if err != nil {
+		return JiraIssue{}, fmt.Errorf("error parsing issue updated "+
+			"field into date: %s", err.Error())
+	}
+	updated = &t*/
+
 	return JiraIssue{
 		ID:          from.ID,
 		Type:        from.Fields.Type.Name,
-		AssigneeKey: assn,
+		AssigneeKey: assnKey,
+		Assignee:    assn,
 		ProjectID:   from.Fields.Project.ID,
 		Resolution:  res,
 		Priority:    from.Fields.Priority.Name,
@@ -102,9 +138,11 @@ func NewJiraIssue(from jira.Issue) JiraIssue {
 		Links:       links,
 		Comments:    comments,
 		Labels:      from.Fields.Labels,
-	}
+		//Updated:     updated,
+	}, nil
 }
 
+// String implements fmt.Stringer.String
 func (i JiraIssue) String() string {
 	// TODO Figure out why slices not casting to slice of Stringers
 	return fmt.Sprintf("ID: %s\n"+
@@ -120,9 +158,25 @@ func (i JiraIssue) String() string {
 		"Links: %s\n"+
 		"Comments: %s\n"+
 		"Labels: [%s]",
+		//"Updated: %s",
 		i.ID, i.Type, i.ProjectID, i.AssigneeKey, i.Resolution,
 		i.Priority, i.Status, i.Title, i.Description, i.Progress,
 		str.JoinStringers(StringerFromJILinks(i.Links)),
 		str.JoinStringers(StringerFromJIComments(i.Comments)),
 		strings.Join(i.Labels, ", "))
+	//,i.Updated)
+}
+
+// Hash implements Hashable.Hash
+func (i JiraIssue) Hash() string {
+	return hash.HashStr(i.String())
+}
+
+// MarshalJSON implements json.Marshaler.MarshalJSON
+func (i JiraIssue) MarshalJSON() ([]byte, error) {
+	m := structs.Map(i)
+
+	m["hash"] = i.Hash()
+
+	return json.Marshal(m)
 }
