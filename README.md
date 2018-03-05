@@ -50,11 +50,13 @@ First copy `config.example.toml` to `config.toml`.
 Then modify it with your own values.  
 
 # Run
-To run Jira to GitHub simply run the executable.  
+To run Jira to GitHub simply run the executable which is named `j2gh`.  
 
-Currently Jira to GitHub is in heavy development. So one must build it manually.  
+There are 3 commands:
 
-To do so clone down this repository and run the `run` Make target.  
+- fetch: Will retrieve state from the Jira and GitHub APIs
+- link: Will create an association between a Jira and GitHub API entity
+- create: Will create the GitHub issues for the retrieved Jira issues
 
-This will complete the transfer process. It is safe to run this command multiple 
-times. As it is aware of the issues it has already transfered.
+Jira to GitHub is safe to run multiple times. As it is aware of the issues 
+which it has already transfered over.
