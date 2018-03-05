@@ -13,6 +13,7 @@ import (
 )
 
 func main() {
+	// TODO: Convert to CLI
 	// Logger
 	logger := log.New(os.Stdout, "main: ", 0)
 
