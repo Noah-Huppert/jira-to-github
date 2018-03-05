@@ -42,6 +42,9 @@ The configuration file holds the following values:
 		- Must have the following permissions `repo:public_repo`, 
 		  `admin:org:read:org`, `user:read:user`, `user:user:email`, 
 		  `write:discussion:read:discussion`.
+	- RepoOwner: GitHub user / organization who owns repository to migrate 
+		     Jira issues to. 
+	- RepoName: Name of GitHub repository to migrate Jira issues to.
 
 First copy `config.example.toml` to `config.toml`.  
 Then modify it with your own values.  
