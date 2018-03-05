@@ -45,6 +45,8 @@ func (a *GitHubAggregate) Aggregate(stores *store.Stores) error {
 		return fmt.Errorf("error aggregating users: %s", err.Error())
 	}
 
+	// TODO: Save GitHubAggregate in store
+
 	a.aggregated = true
 
 	return nil

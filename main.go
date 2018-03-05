@@ -6,11 +6,7 @@ import (
 	"log"
 	"os"
 	/*"context"
-	"github.com/Noah-Huppert/jira-to-github/aggr"
-	"github.com/Noah-Huppert/jira-to-github/config"
-	"github.com/Noah-Huppert/jira-to-github/gh"
-	"github.com/Noah-Huppert/jira-to-github/jira"
-	"github.com/Noah-Huppert/jira-to-github/store"*/)
+	"github.com/Noah-Huppert/jira-to-github/aggr"*/)
 
 // Logger is used to print messages in the main file
 var logger *log.Logger = log.New(os.Stdout, "main: ", 0)
@@ -22,7 +18,12 @@ func main() {
 	app.Usage = "Jira to GitHub issues migration tool"
 	app.Version = "0.1.0"
 	app.EnableBashCompletion = true
-	app.Commands = cmds.AllCommands()
+
+	appCmds, err := cmds.AllCommands()
+	if err != nil {
+		logger.Fatalf("error retrieving commands: %s", err.Error())
+	}
+	app.Commands = appCmds
 
 	// Run cmd
 	if err := app.Run(os.Args); err != nil {
@@ -30,24 +31,6 @@ func main() {
 	}
 
 	/*ctx := context.Background()
-
-	// Configuration
-	cfg, err := config.Load()
-	if err != nil {
-		logger.Fatalf("error loading configuration: %s", err.Error())
-	}
-
-	// Stores
-	stores, err := store.NewStores()
-	if err != nil {
-		logger.Fatalf("error creating stores: %s", err.Error())
-	}
-
-	// Jira client
-	jiraClient, err := jira.NewClient(cfg)
-	if err != nil {
-		logger.Fatalf("error creating Jira client: %s", err.Error())
-	}
 
 	// Load Jira issues
 	if err = jira.UpdateIssues(jiraClient, cfg, stores); err != nil {
@@ -63,7 +46,6 @@ func main() {
 	logger.Printf("Jira aggregate: %s", jAggr)
 
 	// Load GitHub users
-	ghClient := gh.NewClient(ctx, cfg)
 	if err = gh.UpdateUsers(ghClient, ctx, cfg, stores); err != nil {
 		logger.Fatalf("error loading GitHub users: %s", err.Error())
 	}

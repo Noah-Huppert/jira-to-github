@@ -7,7 +7,24 @@ import (
 
 // CreateCommand implements Command for the create command. Which creates GitHub
 // issues for the retrieved Jira issues..
-type CreateCommand struct{}
+type CreateCommand struct {
+	*BaseCommand
+}
+
+// NewCreateCommand creates a new CreateCommand instance. An error is returned
+// if one occurs.
+func NewCreateCommand() (*CreateCommand, error) {
+	// Base
+	base, err := NewBaseCommand()
+	if err != nil {
+		return nil, fmt.Errorf("error creating base command: %s",
+			err.Error())
+	}
+
+	return &CreateCommand{
+		base,
+	}, nil
+}
 
 // Command implements Command.Command
 func (c CreateCommand) Command() cli.Command {

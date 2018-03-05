@@ -7,7 +7,24 @@ import (
 
 // LinkCommand implements Command for the link command. Which creates a
 // relationship between a Jira and GitHub API entity.
-type LinkCommand struct{}
+type LinkCommand struct {
+	*BaseCommand
+}
+
+// NewLinkCommand creates a new LinkCommand instance. An error is returned
+// if one occurs.
+func NewLinkCommand() (*LinkCommand, error) {
+	// Base
+	base, err := NewBaseCommand()
+	if err != nil {
+		return nil, fmt.Errorf("error creating base command: %s",
+			err.Error())
+	}
+
+	return &LinkCommand{
+		base,
+	}, nil
+}
 
 // Command implements Command.Command
 func (c LinkCommand) Command() cli.Command {

@@ -45,6 +45,8 @@ func (a *JiraAggregate) Aggregate(stores *store.Stores) error {
 		return fmt.Errorf("error aggregating issues: %s", err.Error())
 	}
 
+	// TODO: Save JiraAggregate in store
+
 	a.aggregated = true
 
 	return nil
