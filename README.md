@@ -64,6 +64,8 @@ There are 3 commands:
 		`user`, `label`, `issue`.
 	- `Jira ID`: ID of Jira model
 	- `GitHub ID`: ID of GitHub model
+	- If run with no arguments the `link` command lists all the models 
+	  that can be linked, and their link status.
 - `create`: Will create the GitHub issues for the retrieved Jira issues
 	- Takes no arguments.
 
