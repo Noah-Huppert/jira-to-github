@@ -24,7 +24,7 @@ First clone down this repository with `go get github.com/Noah-Huppert/jira-to-gi
 Then run `make install`.  
 
 The Jira to GitHub migration tool will then be installed in `$GOPATH/bin` 
-under the name `j2gh`.
+with the name `j2gh`.
 
 # Setup
 To run Jira To GitHub you must edit the configuration file.  
