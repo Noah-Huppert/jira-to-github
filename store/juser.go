@@ -26,7 +26,7 @@ func NewJiraUserStore() (*JiraUserStore, error) {
 	}, nil
 }
 
-// Get saves a JiraUser to a store
+// Get retrieves a JiraUser
 func (s JiraUserStore) Get(id string, data *models.JiraUser) error {
 	if err := s.db.Read(s.name, id, data); err != nil {
 		return fmt.Errorf("error retrieving Jira user: %s", err.Error())

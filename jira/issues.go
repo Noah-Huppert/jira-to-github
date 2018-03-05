@@ -11,7 +11,7 @@ import (
 	"github.com/Noah-Huppert/jira-to-github/store"
 )
 
-// Logger
+// logger is the Jira module logger
 var logger *log.Logger = log.New(os.Stdout, "jira.issues: ", 0)
 
 // UpdateIssues retrieves and saves all Jira issues that were created after

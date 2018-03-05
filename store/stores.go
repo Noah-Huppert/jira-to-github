@@ -8,6 +8,9 @@ import (
 type Stores struct {
 	// Jira holds Jira model stores
 	Jira *JiraStores
+
+	// GitHub holds GitHub model stores
+	GitHub *GitHubStores
 }
 
 // NewStores creates a new Stores instance. An error is returned if one occurs.
@@ -15,12 +18,20 @@ func NewStores() (*Stores, error) {
 	// Jira
 	jira, err := NewJiraStores()
 	if err != nil {
-		return nil, fmt.Errorf("error creating Jira store: %s",
+		return nil, fmt.Errorf("error creating Jira stores: %s",
+			err.Error())
+	}
+
+	// GitHub
+	gh, err := NewGitHubStores()
+	if err != nil {
+		return nil, fmt.Errorf("error creating GitHub stores: %s",
 			err.Error())
 	}
 
 	return &Stores{
-		Jira: jira,
+		Jira:   jira,
+		GitHub: gh,
 	}, nil
 }
 
@@ -53,5 +64,27 @@ func NewJiraStores() (*JiraStores, error) {
 	return &JiraStores{
 		Issues: issues,
 		Users:  users,
+	}, nil
+}
+
+// GitHubStores is a collection of all the stores used to save GitHub model
+// data.
+type GitHubStores struct {
+	// Users is the GitHub User store
+	Users *GitHubUserStore
+}
+
+// NewGitHubStores creates a new GitHubStores instance. An error is returned
+// if one occurs.
+func NewGitHubStores() (*GitHubStores, error) {
+	// Users
+	users, err := NewGitHubUserStore()
+	if err != nil {
+		return nil, fmt.Errorf("error creating users store: %s",
+			err.Error())
+	}
+
+	return &GitHubStores{
+		Users: users,
 	}, nil
 }

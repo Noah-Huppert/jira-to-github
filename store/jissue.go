@@ -25,7 +25,7 @@ func NewJiraIssueStore() (*JiraIssueStore, error) {
 	}, nil
 }
 
-// Get saves a JiraIssue to a store
+// Get retrieves a JiraIssue
 func (s JiraIssueStore) Get(id string, data *models.JiraIssue) error {
 	if err := s.db.Read(s.name, id, data); err != nil {
 		return fmt.Errorf("error retrieving Jira issue: %s", err.Error())

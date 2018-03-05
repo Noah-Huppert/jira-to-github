@@ -25,6 +25,12 @@ The configuration file holds the following values:
 	- Project: Jira project to extract issues from
 	- Username: Jira account username to authenticate with
 	- Password: Jira account password
+- GitHub : GitHub related configuration
+	- AccessToken: GitHub API access token used to authenticate with the 
+		       GitHub API. 
+		- Must have the following permissions `repo:public_repo`, 
+		  `admin:org:read:org`, `user:read:user`, `user:user:email`, 
+		  `write:discussion:read:discussion`.
 
 First copy `config.example.toml` to `config.toml`.  
 Then modify it with your own values.  

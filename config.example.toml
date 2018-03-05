@@ -1,5 +1,10 @@
 [Jira]
 URL = "http://Your Jira Site URL"
 Project = "Your Jira Project"
-Username = "Your Username"
-Passsord = "Your Password"
+Username = "Your Jira Username"
+Passsord = "Your Jira Password"
+
+[GitHub]
+AccessToken = "Your GitHub Access Token"
+RepoOwner = "GitHub Repository Owner"
+RepoName = "GitHub Repository Name"

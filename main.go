@@ -1,11 +1,13 @@
 package main
 
 import (
+	"context"
 	"log"
 	"os"
 
 	"github.com/Noah-Huppert/jira-to-github/aggr"
 	"github.com/Noah-Huppert/jira-to-github/config"
+	"github.com/Noah-Huppert/jira-to-github/gh"
 	"github.com/Noah-Huppert/jira-to-github/jira"
 	"github.com/Noah-Huppert/jira-to-github/store"
 )
@@ -28,7 +30,7 @@ func main() {
 
 	// Load Jira issues
 	if err = jira.UpdateIssues(cfg, stores); err != nil {
-		logger.Fatalf("error loading jira issues: %s", err.Error())
+		logger.Fatalf("error loading Jira issues: %s", err.Error())
 	}
 
 	// Make Jira aggregate
@@ -37,4 +39,9 @@ func main() {
 		logger.Fatalf("error generating Jira aggregate: %s", err.Error())
 	}
 	logger.Printf("Jira aggregate: %s", jAggr)
+
+	// Load GitHub users
+	if err = gh.UpdateUsers(context.Background(), cfg, stores); err != nil {
+		logger.Fatalf("error loading GitHub users: %s", err.Error())
+	}
 }
