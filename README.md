@@ -52,11 +52,20 @@ Then modify it with your own values.
 # Run
 To run Jira to GitHub simply run the executable which is named `j2gh`.  
 
+Usage: `j2gh <Command>`.  
+
 There are 3 commands:
 
-- fetch: Will retrieve state from the Jira and GitHub APIs
-- link: Will create an association between a Jira and GitHub API entity
-- create: Will create the GitHub issues for the retrieved Jira issues
+- `fetch`: Will retrieve state from the Jira and GitHub APIs
+	- Takes no arguments.
+- `link <Model> <Jira ID> <GitHub ID>`: Will create an association between a 
+	Jira and GitHub API entity
+	- Model: The type of model to create a link for. Values are `user`, 
+		`label`, `issue`
+	- Jira ID: ID of Jira model
+	- GitHub ID: ID of GitHub model
+- `create`: Will create the GitHub issues for the retrieved Jira issues
+	- Takes no arguments.
 
 Jira to GitHub is safe to run multiple times. As it is aware of the issues 
 which it has already transfered over.

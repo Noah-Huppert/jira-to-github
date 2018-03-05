@@ -58,7 +58,6 @@ func (c FetchCommand) Execute(ctx *cli.Context) error {
 		return fmt.Errorf("error generating Jira aggregate: %s",
 			err.Error())
 	}
-	logger.Printf("Jira aggregate: %s", jAggr)
 
 	// Load GitHub users
 	if err := gh.UpdateUsers(c.ghClient, c.ctx, c.cfg, c.stores); err != nil {
@@ -71,7 +70,6 @@ func (c FetchCommand) Execute(ctx *cli.Context) error {
 		return fmt.Errorf("error generating GitHub aggregate: %s",
 			err.Error())
 	}
-	logger.Printf("GitHub aggregate: %s", ghAggr)
 
 	return nil
 }
