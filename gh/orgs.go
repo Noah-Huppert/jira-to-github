@@ -14,5 +14,7 @@ import (
 // An error is returned if one occurs.
 func UpdateOrgUsers(ghClient *github.Client, cfg *config.Config,
 	stores *store.Stores) error {
+
+	// TODO: Implement UpdateOrgUsers
 	return fmt.Errorf("unimplemented")
 }
