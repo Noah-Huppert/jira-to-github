@@ -3,8 +3,9 @@ Migrates Jira issues to Github
  
 # Table Of Contents
 - [Overview](#overview)
+- [Install](#install)
 - [Setup](#setup)
-- [Running](#running)
+- [Run](#Run)
 
 # Overview
 Jira to GitHub is a command line tool for migrating Jira issues to GitHub.  
@@ -14,6 +15,16 @@ GitHub. Jira to GitHub will never modify existing GitHub issues. Nor will it
 ever create duplicates.
 
 See the [Setup](#setup) and [Running](#running) sections for more information.
+
+# Install
+To install Jira To GitHub you must build from source. In the future binary 
+distributions may be provided.  
+
+First clone down this repository with `go get github.com/Noah-Huppert/jira-to-github`.  
+Then run `make install`.  
+
+The Jira to GitHub migration tool will then be installed in `$GOPATH/bin` 
+under the name `j2gh`.
 
 # Setup
 To run Jira To GitHub you must edit the configuration file.  
@@ -35,7 +46,7 @@ The configuration file holds the following values:
 First copy `config.example.toml` to `config.toml`.  
 Then modify it with your own values.  
 
-# Running
+# Run
 To run Jira to GitHub simply run the executable.  
 
 Currently Jira to GitHub is in heavy development. So one must build it manually.  

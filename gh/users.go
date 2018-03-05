@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/Noah-Huppert/jira-to-github/config"
+	"github.com/Noah-Huppert/jira-to-github/errs"
 	"github.com/Noah-Huppert/jira-to-github/models"
 	"github.com/Noah-Huppert/jira-to-github/store"
 	"github.com/google/go-github/github"
@@ -52,6 +53,16 @@ func UpdateUsers(ghClient *github.Client, ctx context.Context,
 			return fmt.Errorf("error storing user, user: %s, "+
 				"err: %s", usr, err.Error())
 		}
+	}
+
+	// Get contributors for organization if cfg.GitHub.RepoOwner is an
+	// organization
+	err = UpdateOrgUsers(ghClient, ctx, cfg, stores)
+
+	// Ignore not found error, means cfg.GitHub.RepoOwner is not an org
+	if (err != nil) && (err != errs.ErrNotFound) {
+		return fmt.Errorf("error updating organization users: %s",
+			err.Error())
 	}
 
 	return nil

@@ -1,23 +1,35 @@
 package main
 
 import (
-	"context"
+	"github.com/Noah-Huppert/jira-to-github/cmds"
+	"github.com/urfave/cli"
 	"log"
 	"os"
-
+	/*"context"
 	"github.com/Noah-Huppert/jira-to-github/aggr"
 	"github.com/Noah-Huppert/jira-to-github/config"
 	"github.com/Noah-Huppert/jira-to-github/gh"
 	"github.com/Noah-Huppert/jira-to-github/jira"
-	"github.com/Noah-Huppert/jira-to-github/store"
-)
+	"github.com/Noah-Huppert/jira-to-github/store"*/)
+
+// Logger is used to print messages in the main file
+var logger *log.Logger = log.New(os.Stdout, "main: ", 0)
 
 func main() {
-	// TODO: Convert to CLI
-	// Logger
-	logger := log.New(os.Stdout, "main: ", 0)
+	// Setup cli
+	app := cli.NewApp()
+	app.Name = "j2gh"
+	app.Usage = "Jira to GitHub issues migration tool"
+	app.Version = "0.1.0"
+	app.EnableBashCompletion = true
+	app.Commands = cmds.AllCommands()
 
-	ctx := context.Background()
+	// Run cmd
+	if err := app.Run(os.Args); err != nil {
+		logger.Fatalf("error running command: %s", err.Error())
+	}
+
+	/*ctx := context.Background()
 
 	// Configuration
 	cfg, err := config.Load()
@@ -62,5 +74,5 @@ func main() {
 		logger.Fatalf("error generating GitHub aggregate: %s",
 			err.Error())
 	}
-	logger.Printf("GitHub aggregate: %s", ghAggr)
+	logger.Printf("GitHub aggregate: %s", ghAggr)*/
 }
