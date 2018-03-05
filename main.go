@@ -16,6 +16,8 @@ func main() {
 	// Logger
 	logger := log.New(os.Stdout, "main: ", 0)
 
+	ctx := context.Background()
+
 	// Configuration
 	cfg, err := config.Load()
 	if err != nil {
@@ -28,20 +30,36 @@ func main() {
 		logger.Fatalf("error creating stores: %s", err.Error())
 	}
 
+	// Jira client
+	jiraClient, err := jira.NewClient(cfg)
+	if err != nil {
+		logger.Fatalf("error creating Jira client: %s", err.Error())
+	}
+
 	// Load Jira issues
-	if err = jira.UpdateIssues(cfg, stores); err != nil {
+	if err = jira.UpdateIssues(jiraClient, cfg, stores); err != nil {
 		logger.Fatalf("error loading Jira issues: %s", err.Error())
 	}
 
 	// Make Jira aggregate
 	jAggr := aggr.NewJiraAggregate()
 	if err = jAggr.Aggregate(stores); err != nil {
-		logger.Fatalf("error generating Jira aggregate: %s", err.Error())
+		logger.Fatalf("error generating Jira aggregate: %s",
+			err.Error())
 	}
 	logger.Printf("Jira aggregate: %s", jAggr)
 
 	// Load GitHub users
-	if err = gh.UpdateUsers(context.Background(), cfg, stores); err != nil {
+	ghClient := gh.NewClient(ctx, cfg)
+	if err = gh.UpdateUsers(ghClient, ctx, cfg, stores); err != nil {
 		logger.Fatalf("error loading GitHub users: %s", err.Error())
 	}
+
+	// Make GitHub aggregate
+	ghAggr := aggr.NewGitHubAggregate()
+	if err = ghAggr.Aggregate(stores); err != nil {
+		logger.Fatalf("error generating GitHub aggregate: %s",
+			err.Error())
+	}
+	logger.Printf("GitHub aggregate: %s", ghAggr)
 }

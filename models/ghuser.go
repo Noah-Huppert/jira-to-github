@@ -11,7 +11,7 @@ import (
 
 // GitHubUserStore holds the name of the store used to save GitHub user
 // models.
-const GitHubUserStore string = "github_users"
+const GitHubUserStore string = "gh_users"
 
 // GitHubUser holds information about a GitHub user.
 type GitHubUser struct {
@@ -30,11 +30,23 @@ type GitHubUser struct {
 
 // NewGitHubUser creates a new GitHubUser from a github.User
 func NewGitHubUser(from github.User) GitHubUser {
+	// Parse email
+	email := ""
+	if from.Email != nil {
+		email = *from.Email
+	}
+
+	// Parse name
+	name := ""
+	if from.Name != nil {
+		name = *from.Name
+	}
+
 	return GitHubUser{
 		ID:    *from.ID,
 		Login: *from.Login,
-		Email: *from.Email,
-		Name:  *from.Name,
+		Email: email,
+		Name:  name,
 	}
 }
 
@@ -52,7 +64,7 @@ func (u GitHubUser) MarshalJSON() ([]byte, error) {
 
 	m["hash"] = u.Hash()
 
-	return json.Marshal(u)
+	return json.Marshal(m)
 }
 
 // Hash implements hash.Hashable.Hash

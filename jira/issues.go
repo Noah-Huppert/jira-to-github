@@ -9,6 +9,8 @@ import (
 	"github.com/Noah-Huppert/jira-to-github/config"
 	"github.com/Noah-Huppert/jira-to-github/models"
 	"github.com/Noah-Huppert/jira-to-github/store"
+
+	"github.com/andygrunwald/go-jira"
 )
 
 // logger is the Jira module logger
@@ -18,25 +20,21 @@ var logger *log.Logger = log.New(os.Stdout, "jira.issues: ", 0)
 // the last sync.
 //
 // An error will be return if one occurs. Nil on success.
-func UpdateIssues(cfg *config.Config, stores *store.Stores) error {
-	// Jira
-	jiraClient, err := NewClient(cfg)
-	if err != nil {
-		return fmt.Errorf("error creating Jira client: %s", err.Error())
-	}
+func UpdateIssues(jiraClient *jira.Client, cfg *config.Config,
+	stores *store.Stores) error {
 
 	// Make Jira aggregate
 	jAggr := aggr.NewJiraAggregate()
-	if err = jAggr.Aggregate(stores); err != nil {
+	if err := jAggr.Aggregate(stores); err != nil {
 		return fmt.Errorf("error generating Jira aggregate: %s", err.Error())
 	}
 
 	// Get issues
-	logger.Printf("retrieving new issues (id > %d)", jAggr.MaxID)
+	logger.Printf("retrieving new issues (id > %d)", jAggr.Issues.MaxID)
 
 	issuesQuery := fmt.Sprintf("project=%s", cfg.Jira.Project)
-	if len(jAggr.IDs) > 0 {
-		issuesQuery += fmt.Sprintf(" and id > %d", jAggr.MaxID)
+	if len(jAggr.Issues.IDs) > 0 {
+		issuesQuery += fmt.Sprintf(" and id > %d", jAggr.Issues.MaxID)
 	}
 
 	issues, _, err := jiraClient.Issue.Search(issuesQuery, nil)

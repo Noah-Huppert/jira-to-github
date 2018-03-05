@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
-	"log"
 
 	"github.com/Noah-Huppert/jira-to-github/config"
 )
