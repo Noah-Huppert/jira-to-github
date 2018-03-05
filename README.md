@@ -60,8 +60,8 @@ There are 3 commands:
 	- Takes no arguments.
 - `link <Model> <Jira ID> <GitHub ID>`: Will create an association between a 
 	Jira and GitHub API entity
-	- `Model`: The type of model to create a link for. Values are `user`, 
-		`label`, `issue`
+	- `Model`: The type of model to create a link for. Valid values are 
+		`user`, `label`, `issue`.
 	- `Jira ID`: ID of Jira model
 	- `GitHub ID`: ID of GitHub model
 - `create`: Will create the GitHub issues for the retrieved Jira issues
