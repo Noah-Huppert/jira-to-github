@@ -5,7 +5,7 @@ Migrates Jira issues to Github
 - [Overview](#overview)
 - [Install](#install)
 - [Setup](#setup)
-- [Run](#Run)
+- [Run](#run)
 
 # Overview
 Jira to GitHub is a command line tool for migrating Jira issues to GitHub.  
