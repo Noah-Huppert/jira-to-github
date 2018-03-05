@@ -13,7 +13,7 @@ type LinkCommand struct{}
 func (c LinkCommand) Command() cli.Command {
 	return cli.Command{
 		Name:   "link",
-		Usage:  "creates a relationship between a Jira and GitHub entity",
+		Usage:  "creates an association between a Jira and GitHub entity",
 		Action: c.Execute,
 	}
 }
