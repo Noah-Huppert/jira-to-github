@@ -11,7 +11,7 @@ Jira to GitHub is a command line tool for migrating Jira issues to GitHub.
 
 It is built from the ground up to ensure a smooth migration from Jira to 
 GitHub. Jira to GitHub will never modify existing GitHub issues. Nor will it 
-ever create duplicate GitHub issues.  
+ever create duplicates.
 
 See the [Setup](#setup) and [Running](#running) sections for more information.
 
