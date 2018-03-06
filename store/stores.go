@@ -11,6 +11,9 @@ type Stores struct {
 
 	// GitHub holds GitHub model stores
 	GitHub *GitHubStores
+
+	// Links holds Link model stores
+	Links *LinkStores
 }
 
 // NewStores creates a new Stores instance. An error is returned if one occurs.
@@ -29,9 +32,17 @@ func NewStores() (*Stores, error) {
 			err.Error())
 	}
 
+	// Link
+	links, err := NewLinkStores()
+	if err != nil {
+		return nil, fmt.Errorf("error creating link model stores: %s",
+			err.Error())
+	}
+
 	return &Stores{
 		Jira:   jira,
 		GitHub: gh,
+		Links:  links,
 	}, nil
 }
 
@@ -86,5 +97,47 @@ func NewGitHubStores() (*GitHubStores, error) {
 
 	return &GitHubStores{
 		Users: users,
+	}, nil
+}
+
+// LinkStores is a collection of all the stores used to save Link models.
+type LinkStores struct {
+	// Users is the store used to save User model links
+	Users *LinkStore
+
+	// Labels is the store used to save Label model links
+	Labels *LinkStore
+
+	// Issues is the store used to save Issue model links
+	Issues *LinkStore
+}
+
+// NewLinkStores create a new LinkStores instance
+func NewLinkStores() (*LinkStores, error) {
+	// Users
+	users, err := NewLinkStore("users")
+	if err != nil {
+		return nil, fmt.Errorf("error creating a user link store: %s",
+			err.Error())
+	}
+
+	// Labels
+	labels, err := NewLinkStore("labels")
+	if err != nil {
+		return nil, fmt.Errorf("error creating a labels link store: %s",
+			err.Error())
+	}
+
+	// Issues
+	issues, err := NewLinkStore("issues")
+	if err != nil {
+		return nil, fmt.Errorf("error creating a issues link store: %s",
+			err.Error())
+	}
+
+	return &LinkStores{
+		Users:  users,
+		Labels: labels,
+		Issues: issues,
 	}, nil
 }
