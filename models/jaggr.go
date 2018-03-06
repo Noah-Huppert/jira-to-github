@@ -1,9 +1,11 @@
-package aggr
+package models
 
 import (
+	"encoding/json"
 	"fmt"
 
-	"github.com/Noah-Huppert/jira-to-github/store"
+	"github.com/Noah-Huppert/jira-to-github/hash"
+	"github.com/fatih/structs"
 )
 
 // JiraAggregateStore indicates the store name to save JiraAggregates into
@@ -38,16 +40,16 @@ func (a JiraAggregate) String() string {
 		a.Issues, a.aggregated)
 }
 
-// Aggregate collects the information. An error will be returned if on occurs
-func (a *JiraAggregate) Aggregate(stores *store.Stores) error {
-	// Issues
-	if err := a.Issues.Aggregate(stores); err != nil {
-		return fmt.Errorf("error aggregating issues: %s", err.Error())
-	}
+// Hash implements hash.Hashable.Hash
+func (a JiraAggregate) Hash() string {
+	return hash.HashStr(a.String())
+}
 
-	// TODO: Save JiraAggregate in store
+// MarshalJSON implements json.Marshaler.MarshalJSON
+func (a JiraAggregate) MarshalJSON() ([]byte, error) {
+	m := structs.Map(a)
 
-	a.aggregated = true
+	m["hash"] = a.Hash()
 
-	return nil
+	return json.Marshal(m)
 }

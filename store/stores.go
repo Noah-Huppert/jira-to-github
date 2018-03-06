@@ -14,6 +14,9 @@ type Stores struct {
 
 	// Links holds Link model stores
 	Links *LinkStores
+
+	// Aggregates holds Aggregate stores
+	Aggregates *AggregateStores
 }
 
 // NewStores creates a new Stores instance. An error is returned if one occurs.
@@ -39,10 +42,18 @@ func NewStores() (*Stores, error) {
 			err.Error())
 	}
 
+	// Aggr
+	aggrs, err := NewAggregateStores()
+	if err != nil {
+		return nil, fmt.Errorf("error creating aggregate stores: %s",
+			err.Error())
+	}
+
 	return &Stores{
-		Jira:   jira,
-		GitHub: gh,
-		Links:  links,
+		Jira:       jira,
+		GitHub:     gh,
+		Links:      links,
+		Aggregates: aggrs,
 	}, nil
 }
 
@@ -112,7 +123,8 @@ type LinkStores struct {
 	Issues *LinkStore
 }
 
-// NewLinkStores create a new LinkStores instance
+// NewLinkStores create a new LinkStores instance. An error is returned if one
+// occurs.
 func NewLinkStores() (*LinkStores, error) {
 	// Users
 	users, err := NewLinkStore("users")
@@ -139,5 +151,37 @@ func NewLinkStores() (*LinkStores, error) {
 		Users:  users,
 		Labels: labels,
 		Issues: issues,
+	}, nil
+}
+
+// AggregateStores is a collection of all the stores used to save aggregates.
+type AggregateStores struct {
+	// Jira is the store used to save Jira aggregates
+	Jira *JiraAggregateStore
+
+	// GitHub is the store used to save GitHub aggregates
+	GitHub *GitHubAggregateStore
+}
+
+// NewAggregateStores creates a new AggregateStores instance. An error is
+// returned if one occurs.
+func NewAggregateStores() (*AggregateStores, error) {
+	// Jira
+	jira, err := NewJiraAggregateStore()
+	if err != nil {
+		return nil, fmt.Errorf("error creating Jira aggregate store: %s",
+			err.Error())
+	}
+
+	// GitHub
+	gh, err := NewGitHubAggregateStore()
+	if err != nil {
+		return nil, fmt.Errorf("error creating GitHub aggregate store: %s",
+			err.Error())
+	}
+
+	return &AggregateStores{
+		Jira:   jira,
+		GitHub: gh,
 	}, nil
 }

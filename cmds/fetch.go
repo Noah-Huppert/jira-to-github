@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/Noah-Huppert/jira-to-github/aggr"
 	"github.com/Noah-Huppert/jira-to-github/gh"
 	"github.com/Noah-Huppert/jira-to-github/jira"
 )
@@ -47,27 +46,29 @@ func (c FetchCommand) Command() cli.Command {
 // Execute runs when a command is invoked by the command line interface. An
 // error will be returned if one occurs.
 func (c FetchCommand) Execute(ctx *cli.Context) error {
+	// Jira
+	// -----
 	// Load Jira issues
 	if err := jira.UpdateIssues(c.jiraClient, c.cfg, c.stores); err != nil {
 		return fmt.Errorf("error loading Jira issues: %s", err.Error())
 	}
 
-	// Make Jira aggregate
-	jAggr := aggr.NewJiraAggregate()
-	if err := jAggr.Aggregate(c.stores); err != nil {
-		return fmt.Errorf("error generating Jira aggregate: %s",
+	// Update Jira aggregate
+	if err := jira.UpdateAggregate(c.stores); err != nil {
+		return fmt.Errorf("error updating Jira aggregate: %s",
 			err.Error())
 	}
 
+	// GitHub
+	// ------
 	// Load GitHub users
 	if err := gh.UpdateUsers(c.ghClient, c.ctx, c.cfg, c.stores); err != nil {
 		return fmt.Errorf("error loading GitHub users: %s", err.Error())
 	}
 
 	// Make GitHub aggregate
-	ghAggr := aggr.NewGitHubAggregate()
-	if err := ghAggr.Aggregate(c.stores); err != nil {
-		return fmt.Errorf("error generating GitHub aggregate: %s",
+	if err := gh.UpdateAggregate(c.stores); err != nil {
+		return fmt.Errorf("error updating GitHub aggregate: %s",
 			err.Error())
 	}
 

@@ -1,9 +1,11 @@
-package aggr
+package models
 
 import (
+	"encoding/json"
 	"fmt"
 
-	"github.com/Noah-Huppert/jira-to-github/store"
+	"github.com/Noah-Huppert/jira-to-github/hash"
+	"github.com/fatih/structs"
 )
 
 // GitHubAggregateStore indicates the store name to save GitHubAggregates into
@@ -38,16 +40,16 @@ func (a GitHubAggregate) String() string {
 		a.Users, a.aggregated)
 }
 
-// Aggregate collects the information. An error is returned if one occurs.
-func (a *GitHubAggregate) Aggregate(stores *store.Stores) error {
-	// Users
-	if err := a.Users.Aggregate(stores); err != nil {
-		return fmt.Errorf("error aggregating users: %s", err.Error())
-	}
+// Hash implements hash.Hashable.Hash
+func (a GitHubAggregate) Hash() string {
+	return hash.HashStr(a.String())
+}
 
-	// TODO: Save GitHubAggregate in store
+// MarshalJSON implements json.Marshaler.MarshalJSON
+func (a GitHubAggregate) MarshalJSON() ([]byte, error) {
+	m := structs.Map(a)
 
-	a.aggregated = true
+	m["hash"] = a.Hash()
 
-	return nil
+	return json.Marshal(m)
 }

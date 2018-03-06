@@ -22,6 +22,8 @@ type ScribbleStore struct {
 // NewScribbleStore creates a new ScribbleStore for the specified store name.
 // Returns an error if one occurs, nil on success.
 func NewScribbleStore(name string) (*ScribbleStore, error) {
+	// Make dir
+
 	// Make scribble db
 	db, err := scribble.New(StoreDir, nil)
 	if err != nil {
@@ -43,15 +45,6 @@ func (s ScribbleStore) Set(id string, data json.Marshaler) error {
 
 	return nil
 }
-
-// Get implements Store.Get
-/*func (s ScribbleStore) Get(id string, data json.Unmarshaler) error {
-	if err := s.db.Read(s.name, id, data); err != nil {
-		return fmt.Errorf("error reading data: %s", err.Error())
-	}
-
-	return nil
-}*/
 
 // Hash implements Store.Hash
 func (s ScribbleStore) Hash(id string) (string, error) {

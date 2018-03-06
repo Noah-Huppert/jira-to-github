@@ -5,7 +5,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/Noah-Huppert/jira-to-github/aggr"
 	"github.com/Noah-Huppert/jira-to-github/config"
 	"github.com/Noah-Huppert/jira-to-github/models"
 	"github.com/Noah-Huppert/jira-to-github/store"
@@ -23,10 +22,13 @@ var logger *log.Logger = log.New(os.Stdout, "jira.issues: ", 0)
 func UpdateIssues(jiraClient *jira.Client, cfg *config.Config,
 	stores *store.Stores) error {
 
-	// Make Jira aggregate
-	jAggr := aggr.NewJiraAggregate()
-	if err := jAggr.Aggregate(stores); err != nil {
-		return fmt.Errorf("error generating Jira aggregate: %s", err.Error())
+	// Get last Jira aggregate
+	var jAggr *models.JiraAggregate = models.NewJiraAggregate()
+	err := stores.Aggregates.Jira.Get(models.JiraAggregateStoreKey, jAggr)
+
+	// Check if key not found
+	if (err != nil) && (os.IsNotExist(err)) {
+		return fmt.Errorf("error retrieving Jira aggregate: %s", err.Error())
 	}
 
 	// Get issues
