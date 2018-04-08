@@ -11,6 +11,9 @@ import (
 // Link indicates an association between a Jira and GitHub entity. The type of
 // entity will be determined by the name of the store the Link is saved in.
 type Link struct {
+	// Model is the type of model being linked
+	Model string
+
 	// GitHubID is the ID of the GitHub entity which is linked
 	GitHubID string
 
@@ -25,11 +28,12 @@ type Link struct {
 }
 
 func (l Link) String() string {
-	return fmt.Sprintf("GitHubID: %d\n"+
+	return fmt.Sprintf("Model: %s\n"+
+		"GitHubID: %d\n"+
 		"GitHubHash: %s\n"+
 		"JiraID: %s\n"+
 		"JiraHash: %s",
-		l.GitHubID, l.GitHubHash, l.JiraID, l.JiraHash)
+		l.Model, l.GitHubID, l.GitHubHash, l.JiraID, l.JiraHash)
 }
 
 // Hash implements hash.Hashable.Hash

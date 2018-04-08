@@ -24,10 +24,9 @@ func UpdateIssues(jiraClient *jira.Client, cfg *config.Config,
 
 	// Get last Jira aggregate
 	var jAggr *models.JiraAggregate = models.NewJiraAggregate()
-	err := stores.Aggregates.Jira.Get(models.JiraAggregateStoreKey, jAggr)
 
-	// Check if key not found
-	if (err != nil) && (os.IsNotExist(err)) {
+	err := stores.Aggregates.Jira.Get(models.JiraAggregateStoreKey, jAggr)
+	if err != nil {
 		return fmt.Errorf("error retrieving Jira aggregate: %s", err.Error())
 	}
 

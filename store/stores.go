@@ -161,6 +161,9 @@ type AggregateStores struct {
 
 	// GitHub is the store used to save GitHub aggregates
 	GitHub *GitHubAggregateStore
+
+	// Links is the sotre used to save Link aggregates
+	Links *LinkAggregateStore
 }
 
 // NewAggregateStores creates a new AggregateStores instance. An error is
@@ -180,8 +183,16 @@ func NewAggregateStores() (*AggregateStores, error) {
 			err.Error())
 	}
 
+	// Links
+	links, err := NewLinkAggregateStore()
+	if err != nil {
+		return nil, fmt.Errorf("error creating Link aggregate store: %s",
+			err.Error())
+	}
+
 	return &AggregateStores{
 		Jira:   jira,
 		GitHub: gh,
+		Links:  links,
 	}, nil
 }
